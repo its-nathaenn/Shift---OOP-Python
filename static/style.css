@@ -56,7 +56,7 @@ a{color:inherit;text-decoration:none}
 }
 .login-html .sign-in:checked + .tab,
 .login-html .sign-up:checked + .tab{
-	color:rgb(249, 249, 249);
+	color:rgb(255, 255, 255);
 	border-color:#ffffff;
 }
 .login-form{
@@ -72,7 +72,7 @@ a{color:inherit;text-decoration:none}
 .login-form .group .input,
 .login-form .group .button{
 	width:100%;
-	color:rgb(255, 252, 252);
+	color:rgb(0, 0, 0);
 	display:block;
 }
 .login-form .group .input,
@@ -80,7 +80,7 @@ a{color:inherit;text-decoration:none}
 	border:none;
 	padding:15px 20px;
 	border-radius:25px;
-	background:rgb(255, 255, 255);
+	background:rgb(203, 216, 179);
 }
 .login-form .group input[data-type="password"]{
 	text-security:circle;
