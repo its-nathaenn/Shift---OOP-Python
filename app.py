@@ -73,9 +73,13 @@ def visitors():
     people = Visitor.query.all()
     return render_template("visitors.html", people = people)
 
+@app.route('/signin')
+def signin():
+    return render_template('signin.html')
 
-
-
+@app.route('/home')
+def homepage():
+    return render_template('homepage.html') 
 
 
 
