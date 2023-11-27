@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # import sqlalchemy
 from flask_sqlalchemy import SQLAlchemy
@@ -6,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 # flask functions as a state based application
 
 app = Flask(__name__)
+app.secret_key = 'Shift'
 
 # Setup app to use a sqlalchemy database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sampleDB.db'
@@ -15,10 +17,11 @@ db = SQLAlchemy(app)
 
 # Setup a simple table for database
 class Employee(db.Model):
-    name = db.Column(db.String(100), default = "no name")
+    username = db.Column(db.String(100), default = "no username")
+    password = db.Column(db.String(100), default = "no password")
     email = db.Column(db.String(100), default = "no email", primary_key = True)
     position = db.Column(db.String(100), default = "Employee")
-    work_id = db.Column(db.String(100), default = "0000")
+    # work_id = db.Column(db.String(100), default = "0000")
 
     def __repr__(self):
         return f"{self.username} - {self.work_id}"
@@ -32,28 +35,62 @@ with app.app_context():
 @app.route('/', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
-        # Retrieve form data
-        username = request.form.get('username')
-        email = request.form.get('email') # Add an email input field in HTML
-        # ... similarly retrieve other fields like password, etc. if needed
+        action = request.form.get('action')
 
-        # Create Employee object
-        new_employee = Employee(name=username, email=email)
-        # Add default values for other fields if not provided in the form
+        if action == 'Sign In':
+            # Process login
+            username = request.form.get('username')
+            password = request.form.get('password')
 
-        # Save to database
-        db.session.add(new_employee)
-        db.session.commit()
+            # Validate user credentials via query
+            user = Employee.query.filter_by(username=username).first()
+            if user and check_password_hash(user.password, password):
+                # Credentials are valid; Redirect to home 
+                session['user_id'] = user.email
+                session['username'] = user.username
+                return redirect('/home')
+            else:
+                # Invalid credentials; show error message
+                return redirect('/')
+            
+        elif action == 'Sign Up':
+            # Process new account creation
+            username = request.form.get('username')
+            email = request.form.get('email')
+            password = request.form.get('password')
 
+
+            # check for duplicates
+            existing_user = Employee.query.filter((Employee.email == email) | (Employee.username == username)).first()
+            if existing_user:
+                # User with this email or username already exists
+                # Handle this scenario - perhaps redirect back with an error message
+                flash('An account with this email or username already exists.', 'error')
+                return redirect('/')
+
+            # Create new Employee object and save to database
+            hashed_password = generate_password_hash(password)
+            new_employee = Employee(username=username, email=email, password=hashed_password)
+            db.session.add(new_employee)
+            db.session.commit()
+    
         # Redirect or send a response
         return redirect('/home')  # Redirect to home or another appropriate page
-
+    
     return render_template('signin.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
 
 
 @app.route('/home')
-def homepage():
-    return render_template('homepage.html') 
+def home():
+    if 'username' not in session:
+        return redirect('/')
+    # Proceed with the logic for authenticated users
+    return render_template('homepage.html')
 
 
 @app.route('/request', methods=['GET', 'POST'])
