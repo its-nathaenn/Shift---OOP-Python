@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager View - Employee Request Forms</title>
+    <!-- Add your CSS styles here, if needed -->
+    <link rel="stylesheet" href="static/basic.css">
+</head>
+<body>
+
+<h1>Manager View - Employee Request Forms</h1>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Work ID</th>
+            <th>Date</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for form in employee_forms %}
+            <tr>
+                <td>{{ form['first_name'] }}</td>
+                <td>{{ form['last_name'] }}</td>
+                <td>{{ form['work_id'] }}</td>
+                <td>{{ form['date'] }}</td>
+                <td>{{ form['reason'] }}</td>
+                <td>{{ form['status'] }}</td>
+                <td>
+                    {% if form['status'] == 'Pending' %}
+                        <form action="{{ url_for('approve_route', work_id=form['work_id']) }}" method="post">
+                            <button type="submit">Approve</button>
+                        </form>
+                        <form action="{{ url_for('deny_route', work_id=form['work_id']) }}" method="post">
+                            <button type="submit">Deny</button>
+                        </form>
+                    {% else %}
+                        <span>Action not available</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+</body>
+</html>
