@@ -67,13 +67,17 @@ def signin():
                 # Handle this scenario - perhaps redirect back with an error message
                 flash('An account with this email or username already exists.', 'error')
                 return redirect('/')
-
-            # Create new Employee object and save to database
+            
             hashed_password = generate_password_hash(password)
             new_employee = Employee(username=username, email=email, password=hashed_password)
             db.session.add(new_employee)
-            db.session.commit()
-    
+            try:
+                db.session.commit()
+            except SQLAlchemy.exc.IntegrityError:
+                db.session.rollback()
+                flash('An account with this email or username already exists.', 'error')
+                return redirect('/')
+
         # Redirect or send a response
         return redirect('/home')  # Redirect to home or another appropriate page
     

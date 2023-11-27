@@ -3,20 +3,28 @@
 <head>
     <link rel="stylesheet" type="text/css" href="static/style.css">
     <title>SHIFT</title>
+	<style>
+        /* Style for error messages */
+        .flash-error {
+            color: red !important;
+        }
+    </style>
 </head>
 <body>
 <div style="text-align: center;">
     <h2 style="color: #000000">Welcome to SHIFT</h2>
     <h2 style="color: #000000">Login or Sign Up to access your work account!</h2>
 
-    <!-- Display Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+	<!-- Display Flash Messages -->
+	{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+			{% for category, message in messages %}
+				<div class="flash-{{ category }}">{{ message }}</div>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
+
+
 
     <div class="login-wrap">
         <div class="login-html">
