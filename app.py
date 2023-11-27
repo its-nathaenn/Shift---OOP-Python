@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, session
 
 # import sqlalchemy
 from flask_sqlalchemy import SQLAlchemy
@@ -15,13 +15,13 @@ db = SQLAlchemy(app)
 
 # Setup a simple table for database
 class Employee(db.Model):
-    username = db.Column(db.String(100), primary_key = True)
+    name = db.Column(db.String(100), default = "no name")
+    email = db.Column(db.String(100), default = "no email", primary_key = True)
     position = db.Column(db.String(100), default = "Employee")
-    # numVisits = db.Column(db.Integer, default = 1) #num of visits will be 1 by default
+    work_id = db.Column(db.String(100), default = "0000")
 
     def __repr__(self):
-        return f"{self.username} - {self.numVisits}"
-
+        return f"{self.username} - {self.work_id}"
 
 
 # Create tables in a Database
@@ -29,53 +29,27 @@ with app.app_context():
     db.create_all()
 
 
-
-# Make a homepage
-@app.route("/")
-def homepage():
-    #return "<h1> This is the homepage of my App! </h1>"
-    return render_template('base.html')
-
-
-
-@app.route("/hello/<name>")
-def hello(name):
-    #listOfNames = [name, "yoyo", "yennifer"]
-    #return render_template('name.html', Sname = name, nameList = listOfNames)
-    return render_template("base.html")
-
-
-
-@app.route('/form', methods=['GET', 'POST'])
-def formDemo():
-    name = None
-    if request.method == 'POST':
-        if request.form['name']:
-            name=request.form['name']
-            # Check if user is in database
-            visitor = Visitor.query.get(name)
-            if visitor == None:
-                # Add Visitor to the database
-                visitor = Visitor(username = name)
-                db.session.add(visitor)
-            else:
-                visitor.numVisits += 1
-        
-            # commit changes to the database
-            db.session.commit()
-    return render_template('form.html', name=name)
-
-
-# Add in a page to view all visitors
-@app.route("/visitors")
-def visitors():
-    # Query the database to find all the visitors
-    people = Visitor.query.all()
-    return render_template("visitors.html", people = people)
-
-@app.route('/signin')
+@app.route('/', methods=['GET', 'POST'])
 def signin():
+    if request.method == 'POST':
+        # Retrieve form data
+        username = request.form.get('username')
+        email = request.form.get('email') # Add an email input field in HTML
+        # ... similarly retrieve other fields like password, etc. if needed
+
+        # Create Employee object
+        new_employee = Employee(name=username, email=email)
+        # Add default values for other fields if not provided in the form
+
+        # Save to database
+        db.session.add(new_employee)
+        db.session.commit()
+
+        # Redirect or send a response
+        return redirect('/home')  # Redirect to home or another appropriate page
+
     return render_template('signin.html')
+
 
 @app.route('/home')
 def homepage():
