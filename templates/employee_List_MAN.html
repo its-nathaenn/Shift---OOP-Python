@@ -49,7 +49,6 @@
             <th>Email</th>
             <th>User name</th>
             <th>Position</th>
-            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -58,10 +57,11 @@
                 <td>{{ employee.email }}</td>
                 <td>{{ employee.username }}</td>
                 <td>{{ employee.position }}</td>
-                <td>{{ employee.email }}</td>
                 <td>
-                    <a href="{{ url_for('employee_info_page', email=employee.email) }}">View Info</a>
-                    <button class="remove-btn" onclick="confirmRemove('{{ employee.email }}')">Remove</button>
+                    <!-- Remove Employee Button -->
+                    <form action="{{ url_for('remove_employee', email=employee.email) }}" method="post" onsubmit="return confirm('Are you sure you want to remove this employee?');">
+                        <button type="submit">Remove</button>
+                    </form>
                 </td>
             </tr>
         {% endfor %}

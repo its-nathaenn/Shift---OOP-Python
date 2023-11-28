@@ -253,6 +253,22 @@ def employee_list():
     return render_template('employee_List_MAN.html', employees=employees)
 
 
+@app.route('/remove_employee/<email>', methods=['POST'])
+def remove_employee(email):
+    if 'username' not in session or session.get('position') != 'Manager':
+        flash('Unauthorized access.', 'error')
+        return redirect('/')
+
+    employee_to_remove = Employee.query.filter_by(email=email).first()
+    if employee_to_remove:
+        db.session.delete(employee_to_remove)
+        db.session.commit()
+        flash('Employee removed successfully.', 'success')
+    else:
+        flash('Employee not found.', 'error')
+    return redirect('/employee_list')
+
+
 @app.route('/employee_info/<email>')
 def employee_info_page(email):
     # Fetch the employee details from the database using the email
