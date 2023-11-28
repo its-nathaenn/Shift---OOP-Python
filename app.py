@@ -29,6 +29,7 @@ class Employee(db.Model):
     def __repr__(self):
         return f"{self.username}"
 
+# Tried creating a database for storing time off requests
 class TimeOffRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     employee_email = db.Column(db.String(100), db.ForeignKey('employee.email'), nullable=False)
@@ -41,6 +42,7 @@ with app.app_context():
     db.create_all()
 
 
+# Route to Sign in
 @app.route('/', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
@@ -102,12 +104,15 @@ def signin():
     
     return render_template('signin.html')
 
+
+# Route to Logout
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
 
+# Route to be taken to home page
 @app.route('/home')
 def home():
     if 'username' not in session:
@@ -122,7 +127,7 @@ def home():
     return render_template('homepage.html', name=username, email=email, position=position)
 
 
-
+# Route to view profile
 @app.route('/edit_profile')
 def edit_profile():
     if 'username' not in session:
@@ -138,7 +143,8 @@ def edit_profile():
         flash("Employee not found.", "error")
         return redirect('/home')
 
-    
+
+# Route to post changes
 @app.route('/update_personal_info', methods=['POST'])
 def update_personal_info():
     if 'username' not in session:
@@ -172,6 +178,7 @@ def update_personal_info():
     return redirect('/home')
 
 
+# Route to request time off form
 @app.route('/request_time_off', methods=['GET'])
 def request_time_off():
     # Ensure that only logged-in users can access this page
@@ -213,7 +220,7 @@ def validate_email(email):
     pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
     return re.match(pattern, email) is not None
 
-
+# Route to submit request 
 @app.route('/submit_time_off', methods=['POST'])
 def submit_time_off():
     validation_result, message = validate_request()
@@ -228,21 +235,15 @@ def submit_time_off():
 def is_empty(value):
     return len(value) == 0 or not value.strip()
 
-
-
+# Route to see work schedule for user
 @app.route('/work_schedule')
 def work_schedule():
     if 'username' not in session:
         flash('You must be logged in to view the work schedule.', 'error')
         return redirect('/')
-
-    # You can add any logic here to fetch the necessary data for the schedule
-    # ...
-
     return render_template('schedule_view_EMP.html')
 
-
-
+# Route to see list of employees
 @app.route('/employee_list')
 def employee_list():
     if 'username' not in session or session.get('position') != 'Manager':
@@ -252,7 +253,7 @@ def employee_list():
     employees = Employee.query.all()
     return render_template('employee_List_MAN.html', employees=employees)
 
-
+# Route to remove any employee from database
 @app.route('/remove_employee/<email>', methods=['POST'])
 def remove_employee(email):
     if 'username' not in session or session.get('position') != 'Manager':
@@ -269,6 +270,7 @@ def remove_employee(email):
     return redirect('/employee_list')
 
 
+# Route to get employees by email
 @app.route('/employee_info/<email>')
 def employee_info_page(email):
     # Fetch the employee details from the database using the email
@@ -280,6 +282,7 @@ def employee_info_page(email):
         flash('Employee not found', 'error')
         return redirect('/employee_list')
 
+# Route to see requests submitted by employees
 @app.route('/manager_request_view')
 def manager_request_view():
     if 'username' not in session or session.get('position') != 'Manager':
@@ -288,7 +291,7 @@ def manager_request_view():
     employee_forms = TimeOffRequest.query.all()
     return render_template('manager_request_view.html', employee_forms=employee_forms)
 
-
+# Route to approve requests
 @app.route('/approve/<int:request_id>', methods=['POST'])
 def approve_route(request_id):
     request_to_approve = TimeOffRequest.query.get(request_id)
@@ -300,6 +303,8 @@ def approve_route(request_id):
         flash('Request not found or already processed', 'error')
     return redirect('/manager_request_view')
 
+
+# Route to deny requests
 @app.route('/deny/<int:request_id>', methods=['POST'])
 def deny_route(request_id):
     request_to_deny = TimeOffRequest.query.get(request_id)
