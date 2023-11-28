@@ -24,11 +24,17 @@ class Employee(db.Model):
     password = db.Column(db.String(100), default = "no password")
     email = db.Column(db.String(100), default = "no email", primary_key = True)
     position = db.Column(db.String(100), default = "Employee")
-    # work_id = db.Column(db.String(100), default = "0000")
+    time_off_requests = db.relationship('TimeOffRequest', backref='employee', lazy=True)
 
     def __repr__(self):
         return f"{self.username}"
 
+class TimeOffRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    employee_email = db.Column(db.String(100), db.ForeignKey('employee.email'), nullable=False)
+    date = db.Column(db.Date)
+    reason = db.Column(db.String(250))
+    status = db.Column(db.String(100), default='Pending')
 
 # Create tables in a Database
 with app.app_context():
@@ -222,45 +228,72 @@ def submit_time_off():
 def is_empty(value):
     return len(value) == 0 or not value.strip()
 
-# Replace this with your actual data store or database
-employee_forms = [
-    {"first_name": "John", "last_name": "Doe", "work_id": "12345", "date": "2023-01-01", "reason": "Vacation", "status": "Pending"},
-    {"first_name": "Jane", "last_name": "Smith", "work_id": "67890", "date": "2023-02-15", "reason": "Sick Leave", "status": "Pending"}
-    # Add more employee forms as needed
-]
+
+
+@app.route('/work_schedule')
+def work_schedule():
+    if 'username' not in session:
+        flash('You must be logged in to view the work schedule.', 'error')
+        return redirect('/')
+
+    # You can add any logic here to fetch the necessary data for the schedule
+    # ...
+
+    return render_template('schedule_view_EMP.html')
 
 
 
+@app.route('/employee_list')
+def employee_list():
+    if 'username' not in session or session.get('position') != 'Manager':
+        return redirect('/')
 
-def approve_request(work_id):
-    for form in employee_forms:
-        if form['work_id'] == work_id:
-            form['status'] = 'Approved'
-            # Implement logic to perform approval action (e.g., send email, update database)
-            break
-
-def deny_request(work_id):
-    for form in employee_forms:
-        if form['work_id'] == work_id:
-            form['status'] = 'Denied'
-            # Implement logic to perform denial action (e.g., send email, update database)
-            break
+    # Fetch the list of employees from the database
+    employees = Employee.query.all()
+    return render_template('employee_List_MAN.html', employees=employees)
 
 
+@app.route('/employee_info/<email>')
+def employee_info_page(email):
+    # Fetch the employee details from the database using the email
+    employee = Employee.query.filter_by(email=email).first()
+    
+    if employee:
+        return render_template('employee_info.html', employee=employee)
+    else:
+        flash('Employee not found', 'error')
+        return redirect('/employee_list')
 
-@app.route('/manager_view')
-def manager_view():
-    return render_template('managerrequestview.html', employee_forms=employee_forms)
+@app.route('/manager_request_view')
+def manager_request_view():
+    if 'username' not in session or session.get('position') != 'Manager':
+        return redirect('/')
 
-@app.route('/approve/<work_id>', methods=['POST'])
-def approve_route(work_id):
-    approve_request(work_id)
-    return redirect('/manager_view')
+    employee_forms = TimeOffRequest.query.all()
+    return render_template('manager_request_view.html', employee_forms=employee_forms)
 
-@app.route('/deny/<work_id>', methods=['POST'])
-def deny_route(work_id):
-    deny_request(work_id)
-    return redirect('/manager_view')
+
+@app.route('/approve/<int:request_id>', methods=['POST'])
+def approve_route(request_id):
+    request_to_approve = TimeOffRequest.query.get(request_id)
+    if request_to_approve and request_to_approve.status == 'Pending':
+        request_to_approve.status = 'Approved'
+        db.session.commit()
+        flash('Time-off request approved', 'success')
+    else:
+        flash('Request not found or already processed', 'error')
+    return redirect('/manager_request_view')
+
+@app.route('/deny/<int:request_id>', methods=['POST'])
+def deny_route(request_id):
+    request_to_deny = TimeOffRequest.query.get(request_id)
+    if request_to_deny and request_to_deny.status == 'Pending':
+        request_to_deny.status = 'Denied'
+        db.session.commit()
+        flash('Time-off request denied', 'error')
+    else:
+        flash('Request not found or already processed', 'error')
+    return redirect('/manager_request_view')
 
 # Add the option to run this file directly
 if __name__ == "__main__":

@@ -28,39 +28,58 @@
                   <!-- Buttons -->
                   <div class="d-flex mt-2"> 
                       <button class="btn1 btn-dark" id="edit-profile-button">Edit Profile</button>
-                  </div> 
-                  <script>
-                    // Edit Profile button action
-                    document.getElementById('edit-profile-button').onclick = function() {
-                        window.location.href = '/edit_profile';
-                    };
-                  </script>
-                  <div class="d-flex mt-2"> 
-                      <button class="btn1 btn-dark">Work Schedule</button> 
-                  </div> 
-                  <div class="d-flex mt-2"> 
-                     <button class="btn1 btn-dark" id="request-time-off-button">Request Time Off</button>
-                     <script>
-                        document.getElementById('request-time-off-button').onclick = function() {
-                           var position = "{{ position }}";
-                           if (position === "Employee") {
-                                 window.location.href = '/request_time_off';
-                           } else {
-                                 // Handle other positions or show an error/alert
-                                 alert('This action is only available for employees.');
-                           }
+                      <script>
+                        document.getElementById('edit-profile-button').onclick = function() {
+                            window.location.href = '/edit_profile';
                         };
-                     </script>
+                      </script>
+                  </div> 
+                  <div class="d-flex mt-2"> 
+                    <button class="btn1 btn-dark" id="work-schedule-button">Work Schedule</button>
+                    <script>
+                      document.getElementById('work-schedule-button').onclick = function() {
+                          window.location.href = '/work_schedule';
+                      };
+                    </script>
                   </div>
+                  <div class="d-flex mt-2">
+                    <!-- Conditional button based on the user's position -->
+                    {% if position == "Manager" %}
+                        <button class="btn1 btn-dark" id="view-time-off-requests-button">View Time Off Requests</button>
+                        <script>
+                            document.getElementById('view-time-off-requests-button').onclick = function() {
+                                window.location.href = '/manager_request_view';
+                            };
+                        </script>
+                    {% else %}
+                        <button class="btn1 btn-dark" id="request-time-off-button">Request Time Off</button>
+                        <script>
+                            document.getElementById('request-time-off-button').onclick = function() {
+                                window.location.href = '/request_time_off';
+                            };
+                        </script>
+                    {% endif %}
+                  </div>                
+                  <!-- View Employees Button (Visible only to Managers) -->
+                  {% if position == "Manager" %}
+                  <div class="d-flex mt-2">
+                      <button class="btn1 btn-dark" id="view-employees-button">View Employees</button>
+                      <script>
+                          document.getElementById('view-employees-button').onclick = function() {
+                              window.location.href = '/employee_list';
+                          };
+                      </script>
+                  </div>
+                  {% endif %}
+
                   <div class="d-flex mt-2"> 
                     <button class="btn1 btn-dark" id="logout-button">Logout</button>
+                    <script>
+                      document.getElementById('logout-button').onclick = function() {
+                          window.location.href = '/logout';
+                      };
+                    </script>
                   </div>
-                  <script>
-                    // Logout button action
-                    document.getElementById('logout-button').onclick = function() {
-                        window.location.href = '/logout';
-                    };
-                  </script>
               </div> 
           </div> 
       </div>
