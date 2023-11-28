@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager View - All Employees</title>
+    <link rel="stylesheet" type="text/css" href="static/basic.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid rgb(7, 60, 9);
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #ffffff;
+        }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+            cursor: pointer;
+        }
+        .remove-btn {
+            background-color: #dc3545;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Manager View - All Employees</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Work ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for employee in employees %}
+            <tr>
+                <td>{{ employee.work_id }}</td>
+                <td>{{ employee.first_name }}</td>
+                <td>{{ employee.last_name }}</td>
+                <td>{{ employee.email }}</td>
+                <td>
+                    <a href="{{ url_for('employee_info_page', work_id=employee.work_id) }}">View Info</a>
+                    <button class="remove-btn" onclick="confirmRemove('{{ employee.work_id }}')">Remove</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+</body>
+</html>

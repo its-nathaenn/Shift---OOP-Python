@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="static/profile.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid rgb(7, 51, 10);
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #ffffff;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input {
+            padding: 5px;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Personal Information</h1>
+
+<form action="{{ url_for('update_personal_info') }}" method="post">
+    <p>
+        <label>Username:</label>
+        <input type="text" name="new_username" value="{{ employee.username }}" required>
+    </p>
+    <p>
+        <label>Email:</label>
+        <input type="email" name="new_email" value="{{ employee.email }}" required>
+    </p>
+    <button type="submit">Update Information</button>
+</form>
+
+</body>
+</html>

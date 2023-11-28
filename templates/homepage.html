@@ -1,25 +1,69 @@
 <!DOCTYPE html>
+<html>
 <head>
     <link rel="stylesheet" type="text/css" href="static/profile.css">
-    <title>{{ SHIFT }}</title>
-</head>
-<html>
-   <style>
+    <title>SHIFT</title>
+    <style>
       h1 {text-align: center;}
       p {text-align: center;}
       div {text-align: center;}
    </style>
-<div class="container mt-4 mb-4 p-3 d-flex justify-content-center"> <div class="card p-4"> 
-<div class=" image d-flex flex-column justify-content-center align-items-center"> 
-<button class="btn btn-secondary"> <img src="static/profilepic.webp" height="200" width="200" /></button>
-<div class="d-flex flex-row justify-content-center align-items-center gap-2"> 
-<span class="name mt-3">Worker Name</span><div class="d-flex flex-row justify-content-center align-items-center gap-2"></div>
-<span class="idd1">Work ID</span><div class="d-flex flex-row justify-content-center align-items-center gap-2"></div>
-<span class="idd1">Position</span> <span><i class="fa fa-copy"></i></span> </div> 
-<div class="d-flex flex-row justify-content-center align-items-center mt-3"> 
-<div class=" d-flex mt-2"> <button class="btn1 btn-dark">Edit Profile</button> </div> 
-<div class=" d-flex mt-2"> <button class="btn1 btn-dark">Work Schedule</button> </div> 
-<div class=" d-flex mt-2"> <button class="btn1 btn-dark">Request Time Off</button> </div> 
-</div> </div> </div></div>
-</body>
-</html>
+</head>
+<body>
+   <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+      <div class="card p-4"> 
+          <div class="image d-flex flex-column justify-content-center align-items-center"> 
+              <button class="btn btn-secondary">
+                <img src="{{ url_for('static', filename='profilePicture.png') }}" alt="Profile Picture" height="200" width="200"/>
+              </button>
+              
+              <!-- Display User Name -->
+              <div class="mt-3"><strong>User:</strong> {{ name }}</div>
+              <!-- Display Email -->
+              <div><strong>Email:</strong> {{ email }}</div>
+              <!-- Display Position -->
+              <div><strong>Position:</strong> {{ position }}</div>
+              
+              <div class="d-flex flex-row justify-content-center align-items-center mt-3"> 
+                  <!-- Buttons -->
+                  <div class="d-flex mt-2"> 
+                      <button class="btn1 btn-dark" id="edit-profile-button">Edit Profile</button>
+                  </div> 
+                  <script>
+                    // Edit Profile button action
+                    document.getElementById('edit-profile-button').onclick = function() {
+                        window.location.href = '/edit_profile';
+                    };
+                  </script>
+                  <div class="d-flex mt-2"> 
+                      <button class="btn1 btn-dark">Work Schedule</button> 
+                  </div> 
+                  <div class="d-flex mt-2"> 
+                     <button class="btn1 btn-dark" id="request-time-off-button">Request Time Off</button>
+                     <script>
+                        document.getElementById('request-time-off-button').onclick = function() {
+                           var position = "{{ position }}";
+                           if (position === "Employee") {
+                                 window.location.href = '/request_time_off';
+                           } else {
+                                 // Handle other positions or show an error/alert
+                                 alert('This action is only available for employees.');
+                           }
+                        };
+                     </script>
+                  </div>
+                  <div class="d-flex mt-2"> 
+                    <button class="btn1 btn-dark" id="logout-button">Logout</button>
+                  </div>
+                  <script>
+                    // Logout button action
+                    document.getElementById('logout-button').onclick = function() {
+                        window.location.href = '/logout';
+                    };
+                  </script>
+              </div> 
+          </div> 
+      </div>
+  </div>
+  </body>
+  </html>
