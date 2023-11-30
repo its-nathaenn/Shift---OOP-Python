@@ -1,45 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" type="text/css" href="static/profile.css">
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
-    <title>Schedule</title>
+    <title>Work Schedule</title>
 </head>
 <body>
     <h1>Work Schedule</h1>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Sunday</th>
-                <th>Monday</th>
-                <th>Tuesday</th>
-                <th>Wednesday</th>
-                <th>Thursday</th>
-                <th>Friday</th>
-                <th>Saturday</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Generate rows from 5:00 AM to 11:00 PM -->
-            {% for hour in range(5, 24) %}
-            <tr>
-                <td>{{ '%02d:00' % (hour if hour <= 12 else hour - 12) }} {{ 'AM' if hour < 12 else 'PM' }}</td>
-                <!-- Fill work hours from 9 AM to 4 PM for Sunday to Thursday -->
-                {% for day in range(0, 7) %}
-                <td>
-                    {% if 9 <= hour < 16 and day in range(0, 5) %}
-                        Work
-                    {% else %}
-                        Off
-                    {% endif %}
-                </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <ul>
+        {% for filename, file_data in uploaded_files.items() %}
+            <li>
+                <strong>{{ filename }}</strong> - Scheduled for {{ file_data.schedule_date }}
+                <a href="{{ url_for('view_file', filename=filename) }}" target="_blank">View File</a>
+            </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
