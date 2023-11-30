@@ -63,6 +63,7 @@ def signin():
                 return redirect('/home')
             else:
                 # Invalid credentials; show error message
+                flash('Incorrect user name or password!', 'error')
                 return redirect('/')
             
         elif action == 'Sign Up':
