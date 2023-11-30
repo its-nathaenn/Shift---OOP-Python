@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager View - Employee Request Forms</title>
-    <link rel="stylesheet" href="static/basic.css">
+    <link rel="stylesheet" href="static/profile.css">
 </head>
 <body>
 
@@ -23,20 +23,20 @@
         </tr>
     </thead>
     <tbody>
-        {% for form in employee_forms %}
+        {% for request, first_name, last_name, email in employee_forms %}
             <tr>
-                <td>{{ form.first_name }}</td>
-                <td>{{ form.last_name }}</td>
-                <td>{{ form.email }}</td>
-                <td>{{ form.date }}</td>
-                <td>{{ form.reason }}</td>
-                <td>{{ form.status }}</td>
+                <td>{{ first_name }}</td>
+                <td>{{ last_name }}</td>
+                <td>{{ email }}</td>
+                <td>{{ request.date }}</td>
+                <td>{{ request.reason }}</td>
+                <td>{{ request.status }}</td>
                 <td>
-                    {% if form.status == 'Pending' %}
-                        <form action="{{ url_for('approve_route', email=form.email) }}" method="post">
+                    {% if request.status == 'Pending' %}
+                        <form action="{{ url_for('approve_route', request_id=request.id) }}" method="post">
                             <button type="submit">Approve</button>
                         </form>
-                        <form action="{{ url_for('deny_route', email=form.email) }}" method="post">
+                        <form action="{{ url_for('deny_route', request_id=request.id) }}" method="post">
                             <button type="submit">Deny</button>
                         </form>
                     {% else %}

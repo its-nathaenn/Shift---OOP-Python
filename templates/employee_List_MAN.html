@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager View - All Employees</title>
-    <link rel="stylesheet" type="text/css" href="static/basic.css">
+    <link rel="stylesheet" type="text/css" href="static/profile.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,8 +57,8 @@
                 <td>{{ employee.email }}</td>
                 <td>{{ employee.username }}</td>
                 <td>{{ employee.position }}</td>
-                <td>
-                    <!-- Remove Employee Button -->
+                <td><!-- Remove Employee Button -->
+                    
                     <form action="{{ url_for('remove_employee', email=employee.email) }}" method="post" onsubmit="return confirm('Are you sure you want to remove this employee?');">
                         <button type="submit">Remove</button>
                     </form>
