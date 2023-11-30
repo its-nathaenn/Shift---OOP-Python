@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
+from datetime import datetime
 
 # import sqlalchemy
 from flask_sqlalchemy import SQLAlchemy
@@ -227,6 +228,27 @@ def submit_time_off():
     validation_result, message = validate_request()
     if validation_result:
         # Process the form data here (e.g., save to database)
+        first_name = request.form.get('data_3')
+        last_name = request.form.get('data_4')
+        email = request.form.get('data_5')
+        date_str = request.form.get('data_6')
+        reason = request.form.get('data_8')
+
+        try:
+            parsed_date = datetime.strptime(date_str, '%m/%d/%y').date()
+        except ValueError:
+            flash('Invalid date format. Please use MM/DD/YY.', 'error')
+            return redirect('/request_time_off')
+
+        new_request = TimeOffRequest(
+            employee_email=email,
+            date = parsed_date,
+            reason = reason,
+            status = 'Pending'
+        )
+
+        db.session.add(new_request)
+        db.session.commit()
         flash('Form submitted successfully!', 'success')
         return redirect('/home')  # Redirect after successful submission
     else:
@@ -288,8 +310,14 @@ def employee_info_page(email):
 def manager_request_view():
     if 'username' not in session or session.get('position') != 'Manager':
         return redirect('/')
-
-    employee_forms = TimeOffRequest.query.all()
+    
+    employee_forms = db.session.query(
+        TimeOffRequest,
+        Employee.firstName,
+        Employee.lastName,
+        Employee.email
+    ).join(Employee, Employee.email == TimeOffRequest.employee_email).all()
+    
     return render_template('manager_request_view.html', employee_forms=employee_forms)
 
 # Route to approve requests
